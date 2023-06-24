@@ -1,0 +1,88 @@
+IST 278 Unit 4 Lab
+
+Name: Michael Bacu		Date: June 14th, 2023
+Lab Instructions
+1.	Type your name and the date in the spaces provided.
+2.	Use the SQL Server Management Studio and the AP database as specified below. 
+3.	Complete all five exercises in this lab
+4.	Upload and submit a completed copy of this lab sheet before the due date.
+
+
+Functions Lab
+
+ 1. Unit 4 Lab Exercise 1
+Use the AP database and create a scalar-valued function named fnPaidInvoiceIDXX where the XX are your initials. Have this function return the InvoiceID of the latest (most recent) invoice with a zero balance. 
+
+Hint: Work page 507 exercise #5 using the AP database before attempting Unit 4 Lab exercise 1.  
+
+--- Paste below this line the code you wrote for this exercise to create the function 
+CREATE FUNCTION fnPaidInvoiceIDMB()
+RETURNS INT
+AS
+BEGIN
+    DECLARE @LatestInvoiceID INT;
+
+    SELECT TOP 1 @LatestInvoiceID = InvoiceID
+    FROM Invoices
+    WHERE InvoiceTotal - PaymentTotal = 0
+    ORDER BY InvoiceDate DESC;
+
+    RETURN @LatestInvoiceID;
+END;
+
+
+
+
+
+2. Unit 4 Lab Exercise 2
+Test the function you wrote for exercise 1 using the following select:
+SELECT VendorName, InvoiceNumber, InvoiceID, InvoiceDueDate, InvoiceTotal - CreditTotal - PaymentTotal AS Balance FROM Vendors JOIN Invoices ON Vendors.VendorID = Invoices.VendorID WHERE InvoiceID = dbo.fnPaidInvoiceIDXX();
+
+Hint:  When getting ready to use the select provided to test your function remember to adjust the fnPaidInvoiceIDXX name to what you named the function you created.
+
+--- Paste below this line the run results from executing the select you used to test your function--
+ 
+
+3. Unit 4 Lab Exercise 3
+Use the AP database and create a table-valued function named fnDateRangeXX where the XX are your initials.  This function requires two parameters of data type date. Don’t validate the parameters. Return a result set that consists of the InvoiceID, VendorID, InvoiceNumber, InvoiceDate, and InvoiceTotal for each invoice that has an InvoiceDate that is within the date range specified by the values passed to the date parameters. 
+
+Hint: Work page 507 exercise #6 using the AP database before attempting Unit 4 Lab exercise 3.  The function you are creating for Unit 4 Lab exercise 3 is very similar.  The function name called for is different and the columns to return in the result set differ a bit. 
+
+--- Paste below this line the code you wrote for this exercise to create the function 
+CREATE FUNCTION dbo.fnDateRangeMB
+(
+    @StartDate DATE,
+    @EndDate DATE
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT InvoiceID, VendorID, InvoiceNumber, InvoiceDate, InvoiceTotal
+    FROM Invoices
+    WHERE InvoiceDate >= @StartDate AND InvoiceDate <= @EndDate
+);
+
+
+
+4. Unit 4 Lab Exercise 4
+Test the Function you created for exercise three by coding and executing a select statement that invokes the function from within a SELECT statement to return invoices with the InvoiceDate range of January 23, 2020 to February 01, 2020 inclusive.
+
+--- Paste below this line the Select statement you wrote for exercise 4 
+SELECT *
+FROM dbo.fnDateRangeMB('2020-01-23', '2020-02-01');
+
+
+
+5. Unit 4 Lab Exercise 5
+Code another select that uses the function you created in exercise 3.  Code this Select to have the SELECT return six columns: the five columns that come back from the function along with the Vendor’s Name.   Use a date range of November 15, 2019 to November 23, 2019 inclusive.
+
+Hints:  1. The best way to code this is to use the function in a join operation (see page 489). 2. Work exercise 7 on page 508 before working this exercise.  It is similar.
+
+
+--- Paste below this line the Select statement you wrote for exercise 5 
+SELECT v.InvoiceID, v.VendorID, v.InvoiceNumber, v.InvoiceDate, v.InvoiceTotal, ve.VendorName
+FROM dbo.fnDateRangeMB('2019-11-15', '2019-11-23') v
+JOIN Vendors ve ON v.VendorID = ve.VendorID;
+
+
