@@ -1,0 +1,302 @@
+IST 278 Unit 5 Lab
+
+Name: Michael Bacu		Date: 6/21/2023
+Lab Instructions
+1.	Type your name and the date in the spaces provided.
+2.	Use the SQL Server Management Studio and the IST278EagleCorp database. 
+3.	Complete all eleven exercises in this lab 
+4.	Upload and submit a completed copy of this lab sheet before the due date.
+
+Trigger Lab
+1. Unit 5 Lab Exercise 1
+Use the IST278EagleCorp database and create a new table named ShippingLabelsXX where the XX are your initials.  Create this table with the following columns:
+DeliverToName 	varchar(40),
+ Address 		 varchar(40),
+ City 			varchar(20),
+ State 			varchar(2),
+ PostalCode		 varchar(10)
+
+Hint: Work page 508 exercise #8 before attempting Lab 1 exercise.
+
+--- Paste below this line the create table code you wrote and executed for this exercise --
+CREATE TABLE ShippingLabelsMB (
+  DeliverToName VARCHAR(40),
+  Address VARCHAR(40),
+  City VARCHAR(20),
+  State VARCHAR(2),
+  PostalCode VARCHAR(10)
+);
+
+
+
+
+
+
+2. Unit 5 Lab Exercise 2
+
+Use the IST278EagleCorp database and create a trigger named TRCustOrderShippingXX where the XX are your initials.   Code this trigger so that it automatically inserts the customer’s name, address, city, state, and postal code into the ShippingLabelsXX table that you created in exercise 1.  This trigger should fire every time a record is inserted in the CustOrder table. 
+
+--- Paste below this line the Trigger you wrote and executed for this exercise –
+CREATE TRIGGER TRCustOrderShippingMB
+ON CustOrder
+INSTEAD OF INSERT
+AS
+BEGIN
+  INSERT INTO ShippingLabelsMB (DeliverToName, Address, City, State, PostalCode)
+  SELECT CustFirstName + CustLastName, Address, City, State, PostalCode
+  FROM Customer;
+END;
+
+
+
+
+
+
+
+--- Paste below this line the completion status messages from executing your create trigger code-
+ 
+
+
+
+
+3. Unit 5 Lab Exercise 3
+Use the IST278EagleCorp database and Insert into the Customer Table a new record.   Use your real name for the CustFirstName, and CustLastName.  Use ‘I-300260’ for the CustomerID.  An example insert that you can modify, and use is provided below:
+
+INSERT INTO dbo.Customer (CustomerID, CompanyName, CustFirstName, CustLastName, CustTitle, [Address], City, [State], PostalCode, Phone, Fax, EmailAddr)
+     VALUES
+           ('I-300260', NULL, 'Your First Name', 'Your Last Name',  NULL, '222 Happy Street', 'South Land', 'SC', '22222',  NULL,    NULL,  NULL)
+
+
+--- Paste below this line the Insert you wrote and executed for this exercise –
+INSERT INTO dbo.Customer (CustomerID, CompanyName, CustFirstName, CustLastName, CustTitle, [Address], City, [State], PostalCode, Phone, Fax, EmailAddr)
+VALUES ('I-300260', NULL, 'Michael', 'Bacu',  NULL, '222 Happy Street', 'South Land', 'SC', '22222',  NULL,    NULL,  NULL);
+
+
+
+
+
+
+
+
+
+
+--- Paste below this line the completion status messages from executing your insert table code-
+ 
+4. Unit 5 Lab Exercise 4
+Use the IST278EagleCorp database and Insert into the CustOrder Table a new record.   Use ‘I-300260’ for the CustomerID.  An insert statement that you can use is provided below:
+
+INSERT INTO dbo.CustOrder (OrderID, CustomerID, OrderDate, RequiredDate)
+     VALUES ('2000000810', 'I-300260', GetDate(), GetDate() + 7)
+
+--- Paste below this line the completion status messages from executing the exercise 4 insert table code-
+ 
+
+5. Unit 5 Lab Exercise 5
+Use the IST278EagleCorp database and code a select * from the ShippingLabelsXX table you created in this lab.  When you execute this select * from ShippingLabelsXX you should see a record in the result set.  A record should have been inserted into your ShippingLabelsXX table when you ran the exercise 4 insert because it should have caused the trigger you created in exercise 2 to fire and it should have inserted a record in your ShippingLablesXX table.
+
+--- Paste below this line the select statement you wrote you wrote for exercise 5 –
+SELECT *
+FROM ShippingLabelsMB;
+
+
+--- Paste below this line the run results from executing the exercise 5 select--
+ 
+
+6. Unit 5 Lab Exercise 6
+Use the IST278EagleCorp database and create a new table named SalesLeadsXX where the XX are your initials.  Create this table with the following columns:
+
+LeadID varchar(10) Primary Key,
+CompanyName varchar(40) NULL,
+CustFirstName varchar(15) NOT NULL,
+CustLastName varchar(20) NOT NULL,
+CustTitle varchar(5) NULL,
+Address varchar(40) NULL,
+City varchar(20) NULL,
+State varchar(2) NULL,
+PostalCode varchar(10) NULL,
+Phone varchar(12) NOT NULL,
+Fax varchar (12) NULL,
+EmailAddr varchar(50) NULL
+
+
+--- Paste below this line the create table code you wrote and executed for this exercise --
+CREATE TABLE SalesLeadsMB (
+  LeadID VARCHAR(10) PRIMARY KEY,
+  CompanyName VARCHAR(40) NULL,
+  CustFirstName VARCHAR(15) NOT NULL,
+  CustLastName VARCHAR(20) NOT NULL,
+  CustTitle VARCHAR(5) NULL,
+  Address VARCHAR(40) NULL,
+  City VARCHAR(20) NULL,
+  State VARCHAR(2) NULL,
+  PostalCode VARCHAR(10) NULL,
+  Phone VARCHAR(12) NOT NULL,
+  Fax VARCHAR(12) NULL,
+  EmailAddr VARCHAR(50) NULL
+);
+
+
+
+
+
+
+
+
+
+7. Unit 5 Lab Exercise 7
+Use the IST278EagleCorp database and create a trigger named TRStopDupCompNamesXX where the XX are your initials.   Code this trigger so that it prohibits duplicate values except for nulls in the SalesLeadsXX table’s CompanyName column. Code this trigger to roll back the statement and return an error message if an INSERT or UPDATE statement creates a duplicate value in the SalesLeadsXX table’s CompanyName column.
+Hint: Work page 508 exercise #9 before attempting Lab 7 exercise.
+
+--- Paste below this line the Trigger you wrote and executed for this exercise –
+CREATE TRIGGER TRStopDupCompNamesMB
+ON SalesLeadsMB
+AFTER INSERT, UPDATE
+AS
+BEGIN
+  IF EXISTS (
+    SELECT CompanyName
+    FROM SalesLeadsMB
+    WHERE CompanyName IS NOT NULL
+    GROUP BY CompanyName
+    HAVING COUNT(*) > 1
+  )
+  BEGIN
+    ROLLBACK;
+    RAISERROR ('Duplicate values (except for nulls) in the CompanyName column are not allowed.', 16, 1);
+  END;
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+8. Unit 5 Lab Exercise 8
+Use the IST278EagleCorp database and code and execute an insert statement to insert a record into the SalesLeadsXX table that you created in exercise 6.  Use the following values for this insert statement: 
+
+Column Name	Value to assign
+LeadID	L-0000001
+CompanyName	NULL
+CustFirstName	Use Your First Name
+CustLastName	Use Your Last Name
+CustTitle	NULL
+Address	224 Happy Street
+City	South Land Park
+State	SC
+PostalCode	22222
+Phone	864 222-2222
+Fax	NULL
+EmailAddr	NULL
+
+--- Paste below this line the Insert you wrote and executed for this exercise –
+
+INSERT INTO SalesLeadsMB (LeadID, CompanyName, CustFirstName, CustLastName, CustTitle, Address, City, State, PostalCode, Phone, Fax, EmailAddr)
+VALUES ('L-0000001', NULL, 'Michael', 'Bacu', NULL, '224 Happy Street', 'South Land Park', 'SC', '22222', '864 222-2222', NULL, NULL);
+
+
+
+
+--- Paste below this line the completion status messages from executing the exercise 8 insert table code-
+
+ 
+
+
+9. Unit 5 Lab Exercise 9
+Use the IST278EagleCorp database and code and execute an insert statement to insert a record into the SalesLeadsXX table that you created in exercise 6.  Use the following values for this insert statement: 
+
+Column Name	Value to assign
+LeadID	L-0000002
+CompanyName	NULL
+CustFirstName	Bill
+CustLastName	Smith
+CustTitle	NULL
+Address	333 Green Street
+City	South Land Park
+State	SC
+PostalCode	22222
+Phone	864 222-3333
+Fax	NULL
+EmailAddr	NULL
+
+--- Paste below this line the Insert you wrote and executed for this exercise –
+INSERT INTO SalesLeadsMB (LeadID, CompanyName, CustFirstName, CustLastName, CustTitle, Address, City, State, PostalCode, Phone, Fax, EmailAddr)
+VALUES ('L-0000002', NULL, 'Bill', 'Smith', NULL, '333 Green Street', 'South Land Park', 'SC', '22222', '864 222-3333', NULL, NULL);
+
+
+--- Paste below this line the completion status messages from executing the exercise 9 insert table code-
+ 
+
+
+10. Unit 5 Lab Exercise 10
+Use the IST278EagleCorp database and code and execute an insert statement to insert a record into the SalesLeadsXX table that you created in exercise 6.  Use the following values for this insert statement: 
+
+Column Name	Value to assign
+LeadID	L-0000003
+CompanyName	Peachy Auto
+CustFirstName	Sue
+CustLastName	Smith
+CustTitle	NULL
+Address	444 River Road
+City	South Land Park
+State	SC
+PostalCode	22222
+Phone	864 222-4444
+Fax	NULL
+EmailAddr	NULL
+
+--- Paste below this line the Insert you wrote and executed for this exercise –
+INSERT INTO SalesLeadsMB (LeadID, CompanyName, CustFirstName, CustLastName, CustTitle, Address, City, State, PostalCode, Phone, Fax, EmailAddr)
+VALUES ('L-0000003', 'Peachy Auto', 'Sue', 'Smith', NULL, '444 River Road', 'South Land Park', 'SC', '22222', '864 222-4444', NULL, NULL);
+
+
+
+
+--- Paste below this line the completion status messages from executing the exercise 10 insert table code-
+ 
+
+
+
+
+
+11. Unit 5 Lab Exercise 11
+Use the IST278EagleCorp database and code and execute an insert statement to insert a record into the SalesLeadsXX table that you created in exercise 6.  Use the following values for this insert statement: 
+
+Column Name	Value to assign
+LeadID	L-0000004
+CompanyName	Peachy Auto
+CustFirstName	Tom
+CustLastName	Smith
+CustTitle	NULL
+Address	444 River Road
+City	South Land Park
+State	SC
+PostalCode	22222
+Phone	864 222-4444
+Fax	NULL
+EmailAddr	NULL
+
+Note:  The trigger you wrote for exercise 7 should stop this insert from happening.  You should see the duplicate value message appear when you execute this trigger since the company used on this insert is the same as the company name used in the insert you did for the prior exercise.
+
+--- Paste below this line the Insert you wrote and executed for this exercise –
+INSERT INTO SalesLeadsMB (LeadID, CompanyName, CustFirstName, CustLastName, CustTitle, Address, City, State, PostalCode, Phone, Fax, EmailAddr)
+VALUES ('L-0000004', 'Peachy Auto', 'Tom', 'Smith', NULL, '444 River Road', 'South Land Park', 'SC', '22222', '864 222-4444', NULL, NULL);
+
+
+
+
+--- Paste below this line the completion status messages from executing the exercise 11 insert table code-
+ 
+
+
+
+
+
