@@ -1,8 +1,7 @@
 # IST-278
 
 SQL Unit Assignments
-This repository contains a collection of SQL unit assignments that I completed as a student. These assignments cover various topics and concepts in SQL, demonstrating my knowledge and skills in working with views, advanced queries, scripts, flow control, stored procedures, functions, and triggers.
-
+This repository contains a collection of SQL unit assignments that I completed as a student.
 Unit 1 - Views and Advanced Queries
 This unit focuses on views and advanced query techniques. It explores creating views, using subqueries, working with complex joins, and optimizing query performance.
 
