@@ -1,0 +1,155 @@
+IST 278 Unit 8 Lab
+
+Name: Michael Bacu		Date: 07/10/2023
+Lab Instructions
+•	Type your name and the date in the spaces provided.
+•	Use the SQL Server Management Studio and the IST278EagleCorp and the AP databases as specified below. 
+•	Complete all 4 exercises in this lab.  Make sure to scroll down this document has several pages.
+•	Upload and submit a completed copy of this lab sheet before the due date.
+
+XML Lab
+
+
+ 1. Unit 8 Lab Exercise 1
+Use the SQL Server Management Studio and the IST278EagleCorp database and write a SELECT statement that returns an XML document that contains all of the Orders in the CustOrder table that involve more than 5 part numbers. This document should include one element for each of these columns: OrderID, CustomerID, PartNumber.   Use a name of 'MultiplePartOrdersXX' for the root element where the XX are your initials.
+--- Paste below this line the SELECT you wrote for this exercise --
+Paste here
+
+
+SELECT
+    OrderID,
+    CustomerID,
+    PartNumber
+FROM 
+    (SELECT
+        o.OrderID,
+        o.CustomerID,
+        col.PartNumber,
+        COUNT(col.PartNumber) OVER (PARTITION BY o.OrderID) AS PartCount
+    FROM
+        dbo.CustOrder AS o
+    INNER JOIN
+        dbo.CustOrderLine AS col
+    ON
+        o.OrderID = col.OrderID) AS OrderPartDetails
+WHERE
+    PartCount > 5
+FOR XML PATH('Order'), ROOT('MultiplePartOrdersMB');
+
+
+
+
+
+
+2. Unit 8 Lab Exercise 2
+
+2a. Use the AP database and write the script called for in exercise 2 on pages 617 of your book, but when completing this exercise use your name in place of Erin Flynn. 
+
+--- Paste below this line the script that you wrote--
+USE AP;
+
+UPDATE Vendors
+SET VendorContactFName = 'Michael',
+    VendorContactLName = 'Bacu'
+WHERE VendorID = 10;
+
+UPDATE Vendors
+SET VendorContactFName = 'Timothy',
+    VendorContactLName = 'McCrystle'
+WHERE VendorID = 4;
+
+
+2b. Use the AP database and code and execute a select statement that returns from the Vendors table the VendorContactFName and VendorContactLName of each row that was modified in step 2a. 
+--- Paste below this line the SELECT statement you wrote--
+Paste here
+USE AP;
+
+SELECT VendorContactFName, VendorContactLName
+FROM Vendors
+WHERE VendorContactFName = 'Michael' AND VendorContactLName = 'Bacu' OR VendorContactFName = 'Timothy' AND VendorContactLName = 'McCrystle';
+
+
+
+
+3. Unit 8 Lab Exercise 3
+
+Write a script that returns a result set that contains all the data stored in the XML document you used in exercise 2.
+--- Paste below this line the script that you wrote—
+USE AP;
+
+SELECT VendorID, VendorContactLName, VendorContactFName
+FROM Vendors
+FOR XML AUTO, ROOT('Vendors'), ELEMENTS;
+
+
+ 
+
+4. Unit 8 Lab Exercise 4
+
+Use the AP database and write a script that (1) creates a table named InstructionsXX where the XX are your initials, (2) inserts the XML document shown below into the table (replace the XXXXXXXXXXX XXXXXXXXXX with your name), and (3) selects all rows from this table. The InstructionsXX table should have two columns. The first column should be an identity column named InstructionsID, and the second column should be an xml column named Instructions. 
+
+<Instructions>
+  <Step>
+    <Description>This is the first step. Coded by XXXXXXXXXX XXXXXXXXXXX</Description>
+    <SubStep>This is the first substep.</SubStep>
+    <SubStep>This is the second substep.</SubStep>
+  </Step>
+  <Step>
+    <Description>This is the second step.</Description>
+  </Step>
+  <Step>
+    <Description>This is the third step.</Description>
+  </Step>
+</Instructions>
+
+--- Paste below this line the script that you wrote—
+Paste here
+
+USE AP;
+
+CREATE TABLE InstructionsMB
+(
+    InstructionsID INT IDENTITY(1,1) PRIMARY KEY,
+    Instructions XML
+);
+
+DECLARE @instructions_xml XML = N'
+<Instructions>
+  <Step>
+    <Description>This is the first step. Coded by Mohd Farhan</Description>
+    <SubStep>This is the first substep.</SubStep>
+    <SubStep>This is the second substep.</SubStep>
+  </Step>
+  <Step>
+    <Description>This is the second step.</Description>
+  </Step>
+  <Step>
+    <Description>This is the third step.</Description>
+  </Step>
+</Instructions>';
+
+INSERT INTO InstructionsMB (Instructions)
+VALUES (@instructions_xml);
+
+SELECT * FROM InstructionsMB;
+
+
+
+
+
+--- Paste below this line the XML that is returned from executing the select you wrote--
+Paste here
+ 
+<Instructions>
+  <Step>
+    <Description>This is the first step. Coded by Mohd Farhan</Description>
+    <SubStep>This is the first substep.</SubStep>
+    <SubStep>This is the second substep.</SubStep>
+  </Step>
+  <Step>
+    <Description>This is the second step.</Description>
+  </Step>
+  <Step>
+    <Description>This is the third step.</Description>
+  </Step>
+</Instructions>
