@@ -75,12 +75,38 @@ WHERE VendorContactFName = 'Michael' AND VendorContactLName = 'Bacu' OR VendorCo
 
 Write a script that returns a result set that contains all the data stored in the XML document you used in exercise 2.
 --- Paste below this line the script that you wrote—
+
 USE AP;
 
-SELECT VendorID, VendorContactLName, VendorContactFName
-FROM Vendors
-FOR XML AUTO, ROOT('Vendors'), ELEMENTS;
+DECLARE @ContactUpdatesHandle int;
 
+DECLARE @ContactUpdates xml;
+SET @ContactUpdates = '
+<ContactUpdates>
+  <Contact VendorID="4">
+    <LastName>McCrystle</LastName>
+    <FirstName>Timothy</FirstName>
+  </Contact>
+  <Contact VendorID="10">
+    <LastName>Bacu</LastName>
+    <FirstName>Michael</FirstName>
+  </Contact>
+</ContactUpdates>
+'
+;
+
+EXEC sp_Xml_PrepareDocument @ContactUpdatesHandle OUTPUT, @ContactUpdates;
+
+SELECT *
+FROM OPENXML (@ContactUpdatesHandle, '/ContactUpdates/Contact') 
+WITH
+(
+	VendorID   int          '@VendorID', 
+	FirstName  varchar(50)  'FirstName', 
+	LastName   varchar(50)  'LastName'
+);
+
+EXEC sp_Xml_RemoveDocument @ContactUpdatesHandle;
 
  
 
