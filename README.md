@@ -16,3 +16,12 @@ Unit 4 is dedicated to functions. It explores the creation and usage of function
 
 Unit 5 - Triggers
 The unit in this collection focuses on triggers. It covers the creation of triggers, their purpose in enforcing business rules, and their impact on database operations.
+
+Unit 6 - 
+This unit concentrates on Transactions & Locking.
+
+Unit 7 - 
+This unit concentrates on Security.
+
+Unit 8 - 
+This unit concentrates on XML.
